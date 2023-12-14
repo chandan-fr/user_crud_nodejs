@@ -69,3 +69,35 @@ exports.userSignin = async (req, res) => {
         res.status(404).json({ error: true, message: exc.message });
     }
 };
+
+exports.updateUser = async (req, res) => {
+    try {
+        const { name, email, phone, password } = req.body;
+
+        const enc_pass = await securePassword(password);
+
+        const user = await userModel.findByIdAndUpdate(req?.params?.id, { name, email, phone, password: enc_pass });
+
+        if (user) {
+            res.status(200).json({ success: true, message: "Users updated successfully" });
+        } else {
+            res.status(200).json({ success: false, message: "Update failed! try again" });
+        }
+    } catch (exc) {
+        res.status(404).json({ error: true, message: exc.message });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await userModel.findByIdAndDelete({_id: req?.params?.id});
+        
+        if(user){
+            res.status(200).json({ success: true, message: "User deleted" });
+        }else{
+            res.status(200).json({ success: false, message: "Please try again!!!" });
+        }
+    } catch (exc) {
+        res.status(404).json({ error: true, message: exc.message });
+    }
+};

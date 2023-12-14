@@ -12,5 +12,7 @@ router.get("/alluser", userController.allUser);
 //post routes
 router.post("/adduser", [verifySignup.checkDuplicateEntries], userController.addUser);
 router.post("/usersignin", userController.userSignin);
+router.post("/updateuser/:id", userController.updateUser);
+router.post("/deleteuser/:id", userController.deleteUser);
 
 module.exports = router;
