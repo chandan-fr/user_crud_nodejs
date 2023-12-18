@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -12,6 +13,8 @@ const userRoute = require("./routes/userRoute");
 
 // making express app
 const app = express();
+
+app.use("/public", express.static("public"));
 
 // url encoding 
 app.use(bodyParser.urlencoded({ extended: true }));

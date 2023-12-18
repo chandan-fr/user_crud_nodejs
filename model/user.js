@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema({
     delete_flag:{
         type: Boolean,
         default: false
+    },
+    profile_photo:{
+        type: String, 
     }
 },{timestamps: true});
 

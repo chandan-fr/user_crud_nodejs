@@ -18,14 +18,15 @@ exports.allUser = async (req, res) => {
     }
 };
 
-
 exports.addUser = async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
 
+        const img = req.file ? "/public/userImg/" + req.file.filename : "";
+
         const enc_pass = await securePassword(password);
 
-        const user = userModel({ name, email, phone, password: enc_pass });
+        const user = userModel({ name, email, phone, password: enc_pass, profile_photo: img });
         const newUser = await user.save();
 
         if (newUser) {
@@ -109,3 +110,50 @@ exports.deleteUser = async (req, res) => {
         res.status(404).json({ error: true, message: exc.message });
     }
 };
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { old_password, new_password } = req?.body;
+
+        const exsistingUser = await userModel.findOne({ _id: req?.params?.id });
+        if (exsistingUser) {
+            const isMatchedPassword = bcrypt.compareSync(old_password, exsistingUser.password);
+            if (isMatchedPassword) {
+                const enc_pass = await securePassword(new_password);
+                const user = await userModel.findByIdAndUpdate(req?.params?.id, { password: enc_pass });
+    
+                if (user) {
+                    res.status(200).json({ success: true, message: "Password updated successfully" });
+                } else {
+                    res.status(200).json({ success: false, message: "Update failed! try again" });
+                }
+            } else {
+                res.status(200).json({ success: false, message: "Password not matched! try again" });
+            }
+        } else {
+            res.status(200).json({ success: false, message: "Invalid User Id!!!" });
+        }
+    } catch (exc) {
+        res.status(404).json({ error: true, message: exc.message });
+    }
+};
+
+exports.updateProfilePhoto = async (req, res) => {
+    try {
+        const exsistingUser = await userModel.findOne({ _id: req?.params?.id });
+        if (exsistingUser) {
+            const img = req.file ? "/public/userImg/" + req.file.filename : exsistingUser.profile_photo;
+            const user = await userModel.findByIdAndUpdate(req?.params?.id, { profile_photo: img });
+
+            if (user) {
+                res.status(200).json({ success: true, message: "Profile photo updated successfully" });
+            } else {
+                res.status(200).json({ success: false, message: "Update failed! try again" });
+            }
+        } else {
+            res.status(200).json({ success: false, message: "Invalid User Id!!!" });
+        }
+    } catch (exc) {
+        res.status(404).json({ error: true, message: exc.message });
+    }
+}
