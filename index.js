@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 require("dotenv").config();
 
 
@@ -12,11 +13,14 @@ const userRoute = require("./routes/userRoute");
 // making express app
 const app = express();
 
-// ======== view =========
-
 // url encoding 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// ======== view =========
+
+// cors policy
+app.use(cors());
 
 // setting router api prefix
 app.use("/api", userRoute);

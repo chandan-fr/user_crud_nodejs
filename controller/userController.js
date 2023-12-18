@@ -45,22 +45,27 @@ exports.userSignin = async (req, res) => {
         if (email && password) {
             const user = await userModel.findOne({ email });
 
-            if (user && (bcrypt.compareSync(password, user.password))) {
-                const token = createToken(user);
+            if (user && !user.delete_flag) {
+                if (bcrypt.compareSync(password, user.password)) {
+                    const token = createToken(user);
 
-                const userDetails = {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    createdAt: user.createdAt,
-                    updatedAt: user.updatedAt,
-                    __v: user.__v
-                };
+                    const userDetails = {
+                        _id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        phone: user.phone,
+                        // delete_flag: user.delete_flag,
+                        createdAt: user.createdAt,
+                        updatedAt: user.updatedAt,
+                        __v: user.__v
+                    };
 
-                res.status(200).json({ success: true, message: "Login Successful.", data: userDetails, token: token });
+                    res.status(200).json({ success: true, message: "Login Successful.", data: userDetails, token: token });
+                } else {
+                    res.status(200).json({ success: false, message: "Incorrect email or password!!!" });
+                }
             } else {
-                res.status(200).json({ success: false, message: "Incorrect email or password!!!" });
+                res.status(200).json({ success: false, message: "Invalid User!!!" });
             }
         } else {
             res.status(200).json({ success: false, message: "All fields are required!!" });
@@ -72,14 +77,14 @@ exports.userSignin = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const { name, email, phone, password } = req.body;
+        const { name, email, phone } = req.body;
 
-        const enc_pass = await securePassword(password);
+        // const enc_pass = await securePassword(password);
 
-        const user = await userModel.findByIdAndUpdate(req?.params?.id, { name, email, phone, password: enc_pass });
+        const user = await userModel.findByIdAndUpdate(req?.params?.id, { name, email, phone });
 
         if (user) {
-            res.status(200).json({ success: true, message: "Users updated successfully" });
+            res.status(200).json({ success: true, message: "User updated successfully" });
         } else {
             res.status(200).json({ success: false, message: "Update failed! try again" });
         }
@@ -90,11 +95,14 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
-        const user = await userModel.findByIdAndDelete({_id: req?.params?.id});
-        
-        if(user){
+        // const user = await userModel.findByIdAndDelete({_id: req?.params?.id});
+
+        /* soft delete */
+        const user = await userModel.findByIdAndUpdate(req?.params?.id, { delete_flag: true });
+
+        if (user) {
             res.status(200).json({ success: true, message: "User deleted" });
-        }else{
+        } else {
             res.status(200).json({ success: false, message: "Please try again!!!" });
         }
     } catch (exc) {

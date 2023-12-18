@@ -19,7 +19,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    
+    delete_flag:{
+        type: Boolean,
+        default: false
+    }
 },{timestamps: true});
 
 
