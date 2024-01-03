@@ -1,4 +1,3 @@
-const { log } = require("console");
 const multer = require("multer");
 const path = require("path");
 
@@ -9,7 +8,8 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix);
+        const midName = file.originalname.split(".")[0];
+        cb(null, file.fieldname + '-' + midName + '-' + uniqueSuffix);
     }
 })
 
@@ -23,7 +23,7 @@ const ImageUpload = multer({
             || file.mimetype === "image/jpeg"
         ) {
             cb(null, true);
-        }else{
+        } else {
             cb(null, false);
             return cb(new Error("Only .png, .jpg, .jpeg forma allowed!"));
         }
