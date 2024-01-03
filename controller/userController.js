@@ -3,6 +3,7 @@ const userModel = require("../model/user");
 const bcrypt = require("bcryptjs");
 const createToken = require("../config/createToken");
 const securePassword = require("../config/securePassword");
+const fs = require("fs");
 
 
 exports.allUser = async (req, res) => {
@@ -22,7 +23,7 @@ exports.addUser = async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
 
-        const img = req.file ? "/public/userImg/" + req.file.filename : "";
+        const img = req.file ? "public/userImg/" + req.file.filename : "";
 
         const enc_pass = await securePassword(password);
 
@@ -121,7 +122,7 @@ exports.updatePassword = async (req, res) => {
             if (isMatchedPassword) {
                 const enc_pass = await securePassword(new_password);
                 const user = await userModel.findByIdAndUpdate(req?.params?.id, { password: enc_pass });
-    
+
                 if (user) {
                     res.status(200).json({ success: true, message: "Password updated successfully" });
                 } else {
@@ -142,7 +143,13 @@ exports.updateProfilePhoto = async (req, res) => {
     try {
         const exsistingUser = await userModel.findOne({ _id: req?.params?.id });
         if (exsistingUser) {
-            const img = req.file ? "/public/userImg/" + req.file.filename : exsistingUser.profile_photo;
+            fs.unlink(exsistingUser.profile_photo, (unlinkError) => {
+                if (unlinkError) {
+                    console.error(`Error deleting uploaded file:${unlinkError}`);
+                }
+            });
+
+            const img = req.file ? "public/userImg/" + req.file.filename : exsistingUser.profile_photo;
             const user = await userModel.findByIdAndUpdate(req?.params?.id, { profile_photo: img });
 
             if (user) {
