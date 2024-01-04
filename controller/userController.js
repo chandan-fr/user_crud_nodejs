@@ -163,4 +163,4 @@ exports.updateProfilePhoto = async (req, res) => {
     } catch (exc) {
         res.status(404).json({ error: true, message: exc.message });
     }
-}
+};

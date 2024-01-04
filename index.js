@@ -9,6 +9,7 @@ require("dotenv").config();
 
 // calling route
 const userRoute = require("./routes/userRoute");
+const paymentRoute = require("./routes/paymentRoute");
 
 
 // making express app
@@ -27,6 +28,7 @@ app.use(cors());
 
 // setting router api prefix
 app.use("/api", userRoute);
+app.use("/api", paymentRoute);
 
 // res to browser
 app.get("/", (req, res)=>{
