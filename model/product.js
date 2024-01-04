@@ -21,6 +21,13 @@ const productSchema = new Schema({
 
 const productModel = mongoose.model("product", productSchema);
 
+const validateProduct = (product) => {
+    const schema = joi.object({
+        product_name: joi.string().alphanum().min(3),
+    });
+
+    return schema.validate(product);
+}
 
 
 module.exports = productModel;
