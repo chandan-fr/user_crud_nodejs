@@ -1,5 +1,14 @@
 const { productModel } = require("../model/product")
 
+
+exports.allProduct = async (req, res) => {
+    try {
+
+    } catch (exc) {
+        res.status(400).json({ error: true, message: exc.message });
+    }
+}
+
 exports.addProduct = async (req, res) => {
     try {
         const { product_name, weight, length, width, height, price, description } = req.body;
@@ -17,6 +26,6 @@ exports.addProduct = async (req, res) => {
 
         res.status(200).json({ success: true, message: "this is test", data: newProduct });
     } catch (exc) {
-        res.status(200).json({ error: true, message: exc.message });
+        res.status(400).json({ error: true, message: exc.message });
     }
 };

@@ -23,7 +23,7 @@ const productModel = mongoose.model("product", productSchema);
 
 const validateProduct = (product) => {
     const schema = joi.object({
-        product_name: joi.string().min(3).messages({
+        product_name: joi.string().min(3).required().messages({
             "string.empty": "Product Name is Required.",
             "string.min": "Minimum length should be 3",
         }),
