@@ -8,7 +8,8 @@ module.exports = (user) => {
             "string.min": "Minimum length should be 3",
             "string.pattern.base": "Alphabets & Blank spaces only.",
         }),
-        email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'in'] } }).required().messages({
+        email: joi.string().email({ minDomainSegments: 1, maxDomainSegments: 2, tlds: { allow: ['com', 'in'] } })
+        .required().messages({
             "string.empty": "Email is Required.",
             "string.email": "Invalid Email format.",
         }),

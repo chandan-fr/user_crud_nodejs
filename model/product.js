@@ -17,6 +17,7 @@ const productSchema = new Schema({
     },
     price: { type: String, required: true },
     description: { type: String, required: true },
+    master_qty: {type: String, required: true}
 }, { timestamps: true });
 
 const productModel = mongoose.model("product", productSchema);
@@ -45,6 +46,9 @@ const validateProduct = (product) => {
         }),
         description: joi.string().required().messages({
             "string.empty": "Description is Required.",
+        }),
+        master_qty: joi.string().required().messages({
+            "string.empty": "Master Quantity is Required.",
         })
     });
 

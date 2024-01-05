@@ -7,6 +7,7 @@ const { validateProduct } = require("../model/product");
 
 const router = express.Router();
 
+router.get("/allproducts", paymentController.allProducts);
 router.post("/addproduct",
     [
         ImageUpload.fields([{ name: "thumbnail" }, { name: "banner_images" }]),
