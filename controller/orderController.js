@@ -6,23 +6,21 @@ exports.placeOrder = async (req, res) => {
         const { products, user } = req.body;
         var count = 0;
         const order_id = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const newProducts = [...products];
 
-        await Promise.all(products?.map(async item => {
+        await Promise.all(products?.map(async (item, i) => {
             const product = await productModel.findOne({ _id: item?.product_id });
             if (parseInt(product.master_qty) >= item?.qty) {
                 count += 1;
-                // console.log("count =>>", count);
-                console.log({ item: product.product_name, quantity: item?.qty, msg: "order placed" });
+                console.log({ item: item?.product_id, quantity: item?.qty, msg: "order placed" });
             } else {
                 if (parseInt(product.master_qty) == 0) {
-                    console.log({ item: product.product_name, quantity: item?.qty, msg: "out of stock" });
+                    newProducts[i].msg = "out of stock";
                 } else {
-                    console.log({ item: product.product_name, quantity: item?.qty, msg: `only ${product.master_qty} left` });
+                    newProducts[i].msg = `only ${product.master_qty} left`;
                 }
             }
         }));
-
-        // console.log("count outside =>>", count);
 
         if (count === products.length) {
             await Promise.all(products?.map(async item => {
@@ -38,8 +36,8 @@ exports.placeOrder = async (req, res) => {
             } else {
                 res.status(200).json({ success: false, message: "Something went worng. Please try again" });
             }
-        }else{
-            
+        } else {
+            res.status(200).json({ success: false, data: newProducts });
         }
     } catch (exc) {
         res.status(400).json({ error: true, message: exc.message });
