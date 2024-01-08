@@ -17,7 +17,8 @@ const productSchema = new Schema({
     },
     price: { type: String, required: true },
     description: { type: String, required: true },
-    master_qty: {type: String, required: true}
+    master_qty: { type: String, required: true },
+    var_qty: { type: Number, default: 1 }
 }, { timestamps: true });
 
 const productModel = mongoose.model("product", productSchema);
