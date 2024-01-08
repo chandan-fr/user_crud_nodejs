@@ -11,6 +11,7 @@ require("dotenv").config();
 const userRoute = require("./routes/userRoute");
 const paymentRoute = require("./routes/paymentRoute");
 const orderRoute = require("./routes/orderRoute");
+const cartRoute = require("./routes/cartRoute");
 
 
 // making express app
@@ -31,6 +32,7 @@ app.use(cors());
 app.use("/api", userRoute);
 app.use("/api", paymentRoute);
 app.use("/api", orderRoute);
+app.use("/api", cartRoute);
 
 // res to browser
 app.get("/", (req, res) => {
