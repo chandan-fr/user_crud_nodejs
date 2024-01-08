@@ -9,10 +9,9 @@ exports.placeOrder = async (req, res) => {
         const newProducts = [...products];
 
         await Promise.all(products?.map(async (item, i) => {
-            const product = await productModel.findOne({ _id: item?.product_id });
+            const product = await productModel.findOne({ _id: item?.product });
             if (parseInt(product.master_qty) >= item?.qty) {
                 count += 1;
-                console.log({ item: item?.product_id, quantity: item?.qty, msg: "order placed" });
             } else {
                 if (parseInt(product.master_qty) == 0) {
                     newProducts[i].msg = "out of stock";
@@ -24,7 +23,7 @@ exports.placeOrder = async (req, res) => {
 
         if (count === products.length) {
             await Promise.all(products?.map(async item => {
-                const product = await productModel.findOne({ _id: item?.product_id });
+                const product = await productModel.findOne({ _id: item?.product });
                 await productModel.findByIdAndUpdate(product._id, { master_qty: product.master_qty - item?.qty });
             }));
 
@@ -32,9 +31,9 @@ exports.placeOrder = async (req, res) => {
             const newOrder = await order.save();
 
             if (newOrder) {
-                res.status(200).json({ success: true, message: "Order Placed successfully", data: newOrder });
+                res.status(202).json({ success: true, message: "Order Placed successfully", data: newOrder });
             } else {
-                res.status(200).json({ success: false, message: "Something went worng. Please try again" });
+                res.status(500).json({ success: false, message: "Something went worng. Please try again" });
             }
         } else {
             res.status(200).json({ success: false, data: newProducts });
@@ -42,4 +41,35 @@ exports.placeOrder = async (req, res) => {
     } catch (exc) {
         res.status(400).json({ error: true, message: exc.message });
     }
-}
+};
+
+exports.orderHistory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const orderData = [];
+
+        const orders = await orderModel.find().populate([{ path: 'products.product' }]);
+
+        orders.map(item => {
+            if (item.user == id) {
+                item?.products?.map(item => {
+                    if (item.qty > 1) {
+                        for (i = 1; i <= item.qty; i++) {
+                            orderData.push(item.product);
+                        };
+                    } else {
+                        orderData.push(item.product);
+                    }
+                });
+            }
+        });
+
+        if (orderData) {
+            res.status(200).json({ success: true, message: "Data fetched successfully.", data: orderData });
+        } else {
+            res.status(200).json({ success: false, message: "No data found!" });
+        }
+    } catch (exc) {
+        res.status(400).json({ error: true, message: exc.message });
+    }
+};
