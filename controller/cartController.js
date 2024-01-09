@@ -80,3 +80,11 @@ exports.increaseDecreaseQty = async (req, res) => {
         res.status(400).json({ error: true, message: exc.message });
     }
 };
+
+exports.removeCartItem = async (req, res) => {
+    try {
+        const {} = req.body;
+    } catch (exc) {
+        res.status(400).json({ error: true, message: exc.message });
+    }
+};
