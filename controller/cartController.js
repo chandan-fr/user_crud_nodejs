@@ -5,12 +5,13 @@ exports.getCart = async (req, res) => {
     try {
         const { id } = req?.params;
         let cartData = [];
+        const user = req?.jwtData;
 
-        if (id) {
+        if (user.id || id) {
             const allCartData = await cartModel.find().populate([{ path: 'product' }]);
 
             allCartData?.map(item => {
-                if (item.user == id) {
+                if (item.user == (user.id || id)) {
                     cartData.push({ product: item.product, qty: item.qty });
                 }
             });
