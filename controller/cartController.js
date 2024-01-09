@@ -12,7 +12,7 @@ exports.getCart = async (req, res) => {
 
             allCartData?.map(item => {
                 if (item.user == (user.id || id)) {
-                    cartData.push({ product: item.product, qty: item.qty });
+                    cartData.push({ _id: item._id, product: item.product, qty: item.qty });
                 }
             });
 
@@ -44,6 +44,37 @@ exports.addtoCart = async (req, res) => {
             }
         } else {
             res.status(206).json({ success: false, message: "All fields are required!" });
+        }
+    } catch (exc) {
+        res.status(400).json({ error: true, message: exc.message });
+    }
+};
+
+exports.increaseDecreaseQty = async (req, res) => {
+    try {
+        const { c_id, qty } = req.body;
+        const user = req?.jwtData;
+
+        if (qty) {
+            if (user?.id) {
+                const cart = await cartModel.findOne({ _id: c_id });
+
+                if (user.id == cart.user) {
+                    const updatedQty = await cartModel.findByIdAndUpdate(c_id, { qty: qty });
+
+                    if (updatedQty) {
+                        res.status(200).json({ success: true, message: "New quantity updated." });
+                    } else {
+                        res.status(500).json({ success: false, message: "Internal Server Error!" });
+                    }
+                } else {
+                    res.status(403).json({ success: false, message: "Forbidden access!" });
+                }
+            } else {
+                res.status(401).json({ success: false, message: "Unauthorized access!" });
+            }
+        } else {
+            res.status(206).json({ success: false, message: "Quantity can't be zero!" });
         }
     } catch (exc) {
         res.status(400).json({ error: true, message: exc.message });

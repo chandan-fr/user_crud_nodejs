@@ -8,6 +8,7 @@ const jwtSessionAuth = require("../middleware/userAuth")
 const router = express.Router();
 
 router.get("/getcart/:id?", [jwtSessionAuth], cartController.getCart);
+router.post("/incdecqty", [jwtSessionAuth], cartController.increaseDecreaseQty);
 router.post("/addtocart", [modelAuth(validateCart)], cartController.addtoCart);
 
 module.exports = router;
