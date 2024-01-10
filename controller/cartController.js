@@ -83,7 +83,24 @@ exports.increaseDecreaseQty = async (req, res) => {
 
 exports.removeCartItem = async (req, res) => {
     try {
-        const {} = req.body;
+        const { c_id } = req.body;
+        const user = req.jwtData;
+
+        if (c_id) {
+            const cartItem = await cartModel.findOne({ _id: c_id });
+
+            if (cartItem.user == user.id) {
+                const updatedCart = await cartModel.findByIdAndDelete(c_id);
+
+                if (updatedCart) {
+                    res.status(200).json({ success: true, message: "Item removed." });
+                }
+            } else {
+                res.status(403).json({ success: false, message: "Forbidden access!" });
+            }
+        } else {
+            res.status(206).json({ success: false, message: "Invalid cart id!" });
+        }
     } catch (exc) {
         res.status(400).json({ error: true, message: exc.message });
     }
