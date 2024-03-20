@@ -4,7 +4,8 @@ const userController = require("../controller/userController");
 const verifySignup = require("../middleware/verifySignup");
 const { ImageUpload } = require("../config/mediaConfig");
 const modelAuth = require("../middleware/modelAuth");
-const validateUser = require("../helpers/validateUser")
+const validateUser = require("../helpers/validateUser");
+const reqRateLimit = require("../config/RequestLimiter.config")
 
 // making router object
 const router = express.Router();
@@ -21,7 +22,7 @@ router.post("/adduser",
     ],
     userController.addUser
 );
-router.post("/usersignin", userController.userSignin);
+router.post("/usersignin", reqRateLimit.limiter , userController.userSignin);
 router.post("/updateuser/:id", userController.updateUser);
 router.post("/deleteuser/:id", userController.deleteUser);
 router.post("/updateprofilephoto/:id", [ImageUpload.single("profile_photo")], userController.updateProfilePhoto);

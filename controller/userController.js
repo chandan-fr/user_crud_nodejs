@@ -64,13 +64,13 @@ exports.userSignin = async (req, res) => {
 
                     res.status(200).json({ success: true, message: "Login Successful.", data: userDetails, token: token });
                 } else {
-                    res.status(200).json({ success: false, message: "Incorrect email or password!!!" });
+                    res.status(400).json({ success: false, message: "Incorrect email or password!!!" });
                 }
             } else {
-                res.status(200).json({ success: false, message: "Invalid User!!!" });
+                res.status(401).json({ success: false, message: "Invalid User!!!" });
             }
         } else {
-            res.status(200).json({ success: false, message: "All fields are required!!" });
+            res.status(400).json({ success: false, message: "All fields are required!!" });
         }
     } catch (exc) {
         res.status(404).json({ error: true, message: exc.message });
